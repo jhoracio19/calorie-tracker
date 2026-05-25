@@ -1,13 +1,28 @@
-import { useState } from "react"
+import { useState, type ChangeEvent } from "react"
+import type { Activity } from "../types"
 import { categories } from "../data/categories"
 
 export default function Form() {
 
-    const [activity, setActivity] = useState({
+    const [activity, setActivity] = useState<Activity>({
         category: 1,
         name: '',
         calories: 0
     })
+
+    const handlChange = (e: ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement>) => {
+        const isNumberField = ['category', 'calories'].includes(e.target.id)
+        setActivity({
+            ...activity,
+            [e.target.id]: isNumberField ? +e.target.value : e.target.value
+        })
+    }
+
+    const isValidActivity = () => {
+        const {name, calories} = activity
+        console.log(name.trim() !== '' && calories > 0);
+        return name.trim() !== '' && calories > 0
+    }
 
   return (
     <form
@@ -24,6 +39,7 @@ export default function Form() {
             className="border border-slate-300 p-2 rounded-lg w-full bg-white"
             id="category"
             value={activity.category}
+            onChange={handlChange}
             >
                 {categories.map(category => (
                     <option
@@ -51,6 +67,7 @@ export default function Form() {
                 className="border border-slate-300 p-2 rounded-lg"
                 placeholder="Ej. Comida, Jugo de Naranja, Ensalada, Ejercicio, Pesas, Bicicleta"
                 value={activity.name}
+                onChange={handlChange}
             />
         </div>
 
@@ -68,13 +85,15 @@ export default function Form() {
                 className="border border-slate-300 p-2 rounded-lg"
                 placeholder="Calorías ej. 300 o 500"
                 value={activity.calories}
+                onChange={handlChange}
             />
         </div>
 
         <input 
         type="submit"
-        className="bg-gray-800 hover:bg-gray-900 w-full p-2 font-bold uppercase text-white cursor-pointer"
+        className="bg-gray-800 hover:bg-gray-900 w-full p-2 font-bold uppercase text-white cursor-pointer disabled:opacity-10"
         value="Guardar Comida o Guardar Ejercicio"
+        disabled={!isValidActivity()}
         />
 
     </form>
