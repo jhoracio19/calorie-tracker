@@ -12,7 +12,13 @@ function App() {
     localStorage.setItem('activities', JSON.stringify(state.activities))
   }, [state.activities])
 
-  const canRestartApp = () => useMemo( () => state.activities.length, [state.activities])
+  const canRestartApp = useMemo(() => state.activities.length > 0, [state.activities]);
+
+  const handleRestartApp = () => {
+    if(window.confirm('Estas seguro de que quieres borrar todo el historial?')){
+      dispatch({type : 'restart-app'})
+    }
+  }
 
   return (
     <>
@@ -24,8 +30,8 @@ function App() {
 
               <button
               className="bg-gray-800 hover:bg-gray-900 p-2 font-bold uppercase text-white cursor-pointer rounded-lg text-sm disabled:opacity-10"
-              disabled={!canRestartApp()}
-              onClick={() => dispatch({type : 'restart-app'})}
+              disabled={!canRestartApp}
+              onClick={() => handleRestartApp()}
               >
                 Reiniciar App
               </button>
@@ -55,6 +61,7 @@ function App() {
           <ActivityList 
             activities = {state.activities}
             dispatch = {dispatch}
+            state = {state}
           />
       </section>
     </>
